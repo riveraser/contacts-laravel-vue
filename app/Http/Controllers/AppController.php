@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class HomeController extends Controller
+class AppController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -13,7 +13,9 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        //This line will be needed after Vue setup
+        //$this->middleware('auth');
+
     }
 
     /**
