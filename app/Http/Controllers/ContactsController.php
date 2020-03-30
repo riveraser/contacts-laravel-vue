@@ -7,15 +7,6 @@ use Illuminate\Http\Request;
 
 class ContactsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
 
     private function validateData()
     {   
@@ -30,6 +21,18 @@ class ContactsController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $this->authorize('viewAny', Contact::class);
+
+        return  request()->user()->contacts;
+    }
+    
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -37,7 +40,10 @@ class ContactsController extends Controller
      */
     public function store(Request $request)
     {
-        Contact::create($this->validateData());
+        $this->authorize('create', Contact::class);
+
+        request()->user()->contacts()->create($this->validateData());
+
     }
 
     /**
@@ -48,6 +54,9 @@ class ContactsController extends Controller
      */
     public function show(Contact $contact)
     {
+        //Need to check if the user can view contacts
+        $this->authorize('view', $contact);
+
         return $contact::first();
     }
 
@@ -60,6 +69,9 @@ class ContactsController extends Controller
      */
     public function update(Request $request, Contact $contact)
     {
+        
+        $this->authorize('update', $contact);
+
         $contact->update($this->validateData());
     }
 
@@ -71,6 +83,8 @@ class ContactsController extends Controller
      */
     public function destroy(Contact $contact)
     {
+        $this->authorize('delete', $contact);
+        
         $contact->delete();
     }
 }
