@@ -14,7 +14,7 @@ class AppController extends Controller
     public function __construct()
     {
         //This line will be needed after Vue setup
-        //$this->middleware('auth');
+        $this->middleware('auth');
 
     }
 
