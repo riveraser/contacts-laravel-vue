@@ -3,17 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Contact;
+use App\Http\Resources\Contact as ContactResource;
 use Illuminate\Http\Request;
+
+use Symfony\Component\HttpFoundation\Response;
 
 class ContactsController extends Controller
 {
 
     private function validateData()
-    {   
+    {
         //Validations
         return request()->validate([
             'name'      => 'required',
-            'email'     => 'required|email', 
+            'email'     => 'required|email',
             'birthday'  => 'required',
             'company'   => 'required'
         ]);
@@ -29,9 +32,9 @@ class ContactsController extends Controller
     {
         $this->authorize('viewAny', Contact::class);
 
-        return  request()->user()->contacts;
+        return ContactResource::collection(request()->user()->contacts);
     }
-    
+
     /**
      * Store a newly created resource in storage.
      *
@@ -42,7 +45,12 @@ class ContactsController extends Controller
     {
         $this->authorize('create', Contact::class);
 
-        request()->user()->contacts()->create($this->validateData());
+        $contact = request()->user()->contacts()->create($this->validateData());
+
+        //return response([], 201);
+        return (new ContactResource($contact) )
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
 
     }
 
@@ -57,7 +65,7 @@ class ContactsController extends Controller
         //Need to check if the user can view contacts
         $this->authorize('view', $contact);
 
-        return $contact::first();
+        return  new ContactResource($contact::first() );
     }
 
     /**
@@ -69,10 +77,16 @@ class ContactsController extends Controller
      */
     public function update(Request $request, Contact $contact)
     {
-        
+
         $this->authorize('update', $contact);
 
         $contact->update($this->validateData());
+
+        return (new ContactResource($contact) )
+            ->response()
+            ->setStatusCode(Response::HTTP_OK);
+
+
     }
 
     /**
@@ -84,7 +98,9 @@ class ContactsController extends Controller
     public function destroy(Contact $contact)
     {
         $this->authorize('delete', $contact);
-        
+
         $contact->delete();
+
+        return response([], Response::HTTP_NO_CONTENT);
     }
 }
