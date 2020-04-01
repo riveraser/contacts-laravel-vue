@@ -17,7 +17,7 @@
             <div class="relative">
                 <label for="email" class="uppercase text-blue-500 text-xs font-bold absolute pl-3 pt-3">E-Mail</label>
                 <div>
-                    <input id="email" type="email" 
+                    <input id="email" type="email"
                         class="pt-8 w-full rounded p-3 bg-blue-800 text-gray-100 outline-none focus:bg-blue-700"
                         name="email" value="{{ old('email') }}" autocomplete="email" autofocus placeholder="your@email.com"
                     >
@@ -26,7 +26,7 @@
                     @enderror
                 </div>
             </div>
-            
+
             <div class="pt-8">
                 <button type="submit" class="w-full bg-gray-200 py-2 px-3 text-left uppercase rounded text-blue-800 font-bold hover:bg-blue-400 focus:bg-blue-600">
                     Send Reset Link

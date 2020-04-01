@@ -12,7 +12,7 @@
                 <div class="relative">
                     <label for="email" class="uppercase text-blue-500 text-xs font-bold absolute pl-3 pt-3">E-Mail</label>
                     <div>
-                        <input id="email" type="email" 
+                        <input id="email" type="email"
                             class="pt-8 w-full rounded p-3 bg-blue-800 text-gray-100 outline-none focus:bg-blue-700"
                             name="email" value="{{ old('email') }}" autocomplete="email" autofocus placeholder="your@email.com"
                         >
@@ -27,7 +27,7 @@
 
                     <div>
                         <input id="password" type="password"
-                            class="pt-8 w-full rounded p-3 bg-blue-800 text-gray-100 outline-none focus:bg-blue-700" 
+                            class="pt-8 w-full rounded p-3 bg-blue-800 text-gray-100 outline-none focus:bg-blue-700"
                             name="password" autocomplete="current-password" placeholder="Password"
                         >
 
