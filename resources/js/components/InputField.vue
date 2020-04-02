@@ -19,16 +19,22 @@
 <script>
 export default {
   name: "InputField",
-  props: ["name", "label", "placeholder", "errors"],
-  data: function () {
-      return {
-          value: ''
-      }
-  },
+  props: ["name", "label", "placeholder", "errors", "data"],
   computed: {
       errorMessage(){
         return (this.errors && this.errors[this.name] &&  this.errors[this.name].length > 0) ? this.errors[this.name][0] : '';
-      }
+      },
+      value: {
+        // getter
+        get: function() {
+            return this.data;
+        },
+        // setter
+        set: function(newValue) {
+            //this.$emit("change-state", newValue);
+            this.$emit("update:data", newValue);
+        }
+    }
   },
   methods: {
       updateField(){
@@ -42,13 +48,5 @@ export default {
 </script>
 
 <style>
-.input-field{
-    transition: all .3s ease-out;
-}
-.error-field {
-    @apply .border-red-500 .border-b-2
-}
-.error-field:active, .error-field:focus {
-    @apply .border-red-300 .border-b-2 !important
-}
+
 </style>

@@ -3,4 +3,118 @@
 
 @tailwind components;
 
+
+/*
+https://tailwindcss.com/docs/extracting-components/
+recomends to extract the components and crea own custom clases
+*/
+.btn {
+    transition: all .25s ease-out;
+    @apply px-4 py-2 rounded text-xs uppercase font-bold shadow-sm ;
+
+    &:focus{
+       @apply outline-none;
+    }
+    &:hover{
+        @apply shadow-md;
+    }
+    &:active{
+        @apply shadow;
+    }
+
+}
+.btn-primary{
+   @apply text-white shadow-md bg-blue-500;
+
+   &:hover{
+    @apply bg-blue-400;
+   }
+   &:active{
+    @apply bg-blue-600;
+   }
+}
+.btn-secondary{
+    @apply text-gray-600 border bg-gray-200;
+
+    &:hover{
+        @apply bg-gray-100 border-gray-200;
+    }
+    &:active{
+        @apply bg-gray-300 border-gray-400;
+    }
+}
+
+.btn-edit{
+    @apply text-green-500 border bg-white border-green-500;
+
+    &:hover{
+        @apply border-green-300 text-green-400;
+    }
+    &:active{
+        @apply border-green-700 text-green-600;
+    }
+}
+
+.btn-delete{
+    @apply text-red-500 border bg-white border-red-500;
+
+    &:hover{
+        @apply border-red-300 text-red-400;
+    }
+    &:active{
+        @apply border-red-700 text-red-600;
+    }
+}
+
+.modal {
+    transition: all 0.25s ease;
+    opacity: 1;
+    @apply pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center;
+
+    .modal-overlay{
+        @apply absolute w-full h-full bg-gray-900 opacity-50;
+    }
+
+    .modal-container {
+        /*md:max-w-md*/
+        @apply bg-white w-11/12  mx-auto rounded shadow-lg z-50 overflow-y-auto;
+
+        .modal-close{
+            @apply absolute top-0 right-0 cursor-pointer flex flex-col items-center mt-4 mr-4 text-white text-sm z-50;
+        }
+        .modal-content{
+            @apply  text-left;
+
+            .modal-title {
+                font-weight: 400;
+               @apply flex justify-between items-center py-2 px-4 border-b uppercase text-2xl;
+            }
+            .modal-body {
+                @apply my-2 mx-4;
+            }
+            .modal-footer{
+                @apply flex justify-end pt-2 py-2 px-4  border-t;
+            }
+
+        }
+    }
+}
+body.modal-active {
+    overflow-x: hidden;
+    overflow-y: visible !important;
+    .modal{
+        @apply pointer-events-auto;
+    }
+}
+
+.input-field{
+    transition: all .3s ease-out;
+}
+.error-field {
+    @apply border-red-500 border-b-2;
+}
+.error-field:active, .error-field:focus {
+    @apply border-red-300 border-b-2;
+}
+
 @tailwind utilities;

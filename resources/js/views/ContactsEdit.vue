@@ -1,5 +1,9 @@
 <template>
     <div>
+        <div class="flex justify-between">
+            <a href="#" class="text-blue-400" @click.prevent="$router.back()" > <b>&lsaquo;</b> back</a>
+            <!-- <router-link :to="`/contacts/${this.$route.params.id}`">&lt; back</router-link> -->
+        </div>
         <form @submit.prevent="submiForm">
             <InputField name="name" label="Contact name" placeholder="Contact name"
                 :data.sync="form.name" :errors="errors"></InputField>
@@ -12,7 +16,7 @@
 
             <div class="flex justify-end" >
                 <button class="btn btn-secondary mr-2" >Cancel</button>
-                <button class="btn btn-primary" >Add new contact</button>
+                <button class="btn btn-primary" >Save</button>
             </div>
         </form>
     </div>
@@ -23,7 +27,7 @@
 import InputField from '../components/InputField';
 
 export default {
-    name: 'ContactsCreate',
+    name: 'ContactsEdit',
     components: { InputField },
     data: function(){
         return {
@@ -36,9 +40,20 @@ export default {
             errors: null
         }
     },
+    mounted(){
+
+        axios.get( `/api/contacts/${this.$route.params.id}`).then(response=>{
+            this.form = response.data.data;
+        }).catch(err=>{
+            if (err.response.status === 404){
+                this.$router.back();
+            }
+        });
+
+    },
     methods: {
         submiForm(){
-            axios.post('/api/contacts', this.form).then(response=>{
+            axios.put(`/api/contacts/${this.$route.params.id}`, this.form).then(response=>{
                 this.$router.push(response.data.links.self);
             }).catch(err=>{
                 this.errors = err.response.data.errors;

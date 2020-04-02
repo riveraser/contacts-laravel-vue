@@ -14,7 +14,13 @@ class Contact extends Model
 
     public function path()
     {
-        return url('/contacts/'. $this->id );
+        return '/contacts/'. $this->id;
+    }
+
+    public function scopeBirthdays($query)
+    {
+        return $query->whereRaw('birthday LIKE "%-'. now()->format('m') .'-%" ' );
+
     }
 
     public function setBirthdayAttribute($birthday)
@@ -26,6 +32,6 @@ class Contact extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-       
+
     }
 }

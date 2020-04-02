@@ -65,7 +65,7 @@ class ContactsController extends Controller
         //Need to check if the user can view contacts
         $this->authorize('view', $contact);
 
-        return  new ContactResource($contact::first() );
+        return  new ContactResource($contact);
     }
 
     /**
