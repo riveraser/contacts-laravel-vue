@@ -15,8 +15,8 @@
                 :data.sync="form.birthday" :errors="errors"></InputField>
 
             <div class="flex justify-end" >
-                <button class="btn btn-secondary mr-2" >Cancel</button>
-                <button class="btn btn-primary" >Save</button>
+                <button @click.prevent="$router.push(`/contacts/${$route.params.id}`)"  class="btn btn-secondary mr-2" >Cancel</button>
+                <button class="btn btn-primary" :disabled="sending" >Save</button>
             </div>
         </form>
     </div>
@@ -37,7 +37,8 @@ export default {
                 company: '',
                 birthday: ''
             },
-            errors: null
+            errors: null,
+            sending: false
         }
     },
     mounted(){
@@ -53,11 +54,17 @@ export default {
     },
     methods: {
         submiForm(){
-            axios.put(`/api/contacts/${this.$route.params.id}`, this.form).then(response=>{
-                this.$router.push(response.data.links.self);
-            }).catch(err=>{
-                this.errors = err.response.data.errors;
-            });
+            
+            if (!this.sending){
+                this.sending = true;
+                axios.put(`/api/contacts/${this.$route.params.id}`, this.form).then(response=>{
+                    this.$router.push(response.data.links.self);
+                }).catch(err=>{
+                    this.errors = err.response.data.errors;
+                }).finally(err=>{
+                   this.sending = false;
+                });
+            }
         }
     }
 }

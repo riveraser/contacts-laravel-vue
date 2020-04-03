@@ -1899,6 +1899,29 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/actions/Logout.vue?vue&type=script&lang=js&":
+/*!**************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/actions/Logout.vue?vue&type=script&lang=js& ***!
+  \**************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'Logout',
+  created: function created() {
+    axios.post('/logout', {})["finally"](function (err) {
+      window.location = '/login';
+    });
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/App.vue?vue&type=script&lang=js&":
 /*!**************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/App.vue?vue&type=script&lang=js& ***!
@@ -1975,9 +1998,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     SearchBar: _SearchBar__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
   props: ['user'],
+  data: function data() {
+    return {
+      title: '',
+      namedLink: ''
+    };
+  },
   created: function created() {
     var _this = this;
 
+    this.title = this.$route.meta.title;
+    this.namedLink = this.$route.name;
     window.axios.interceptors.request.use(function (config) {
       if (config.method === 'get') {
         config.url = "".concat(config.url, "?api_token=").concat(_this.user.api_token);
@@ -1989,6 +2020,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       return config;
     });
+  },
+  watch: {
+    $route: function $route(to, from) {
+      this.title = to.meta.title;
+      this.namedLink = to.name;
+    },
+    title: function title(val) {
+      document.title = this.title + ' | SPA Contacts with Vue and Laravel ';
+    }
   }
 });
 
@@ -2396,6 +2436,7 @@ __webpack_require__.r(__webpack_exports__);
       var q = this.searchTerm.trim();
 
       if (q.length < 2) {
+        this.results = [];
         return;
       }
 
@@ -2490,18 +2531,24 @@ __webpack_require__.r(__webpack_exports__);
         company: '',
         birthday: ''
       },
-      errors: null
+      errors: null,
+      sending: false
     };
   },
   methods: {
     submiForm: function submiForm() {
       var _this = this;
 
-      axios.post('/api/contacts', this.form).then(function (response) {
-        _this.$router.push(response.data.links.self);
-      })["catch"](function (err) {
-        _this.errors = err.response.data.errors;
-      });
+      if (!this.sending) {
+        this.sending = true;
+        axios.post('/api/contacts', this.form).then(function (response) {
+          _this.$router.push(response.data.links.self);
+        })["catch"](function (err) {
+          _this.errors = err.response.data.errors;
+        })["finally"](function (err) {
+          _this.sending = false;
+        });
+      }
     }
   }
 });
@@ -2556,7 +2603,8 @@ __webpack_require__.r(__webpack_exports__);
         company: '',
         birthday: ''
       },
-      errors: null
+      errors: null,
+      sending: false
     };
   },
   mounted: function mounted() {
@@ -2574,11 +2622,16 @@ __webpack_require__.r(__webpack_exports__);
     submiForm: function submiForm() {
       var _this2 = this;
 
-      axios.put("/api/contacts/".concat(this.$route.params.id), this.form).then(function (response) {
-        _this2.$router.push(response.data.links.self);
-      })["catch"](function (err) {
-        _this2.errors = err.response.data.errors;
-      });
+      if (!this.sending) {
+        this.sending = true;
+        axios.put("/api/contacts/".concat(this.$route.params.id), this.form).then(function (response) {
+          _this2.$router.push(response.data.links.self);
+        })["catch"](function (err) {
+          _this2.errors = err.response.data.errors;
+        })["finally"](function (err) {
+          _this2.sending = false;
+        });
+      }
     }
   }
 });
@@ -2710,17 +2763,20 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   mounted: function mounted() {
-    var _this = this;
-
-    axios.get("/api/contacts/".concat(this.$route.params.id)).then(function (response) {
-      _this.contact = response.data.data;
-    })["catch"](function (err) {
-      if (err.response.status === 404) {
-        _this.$router.push('/contacts');
-      }
-    });
+    this.fetchData();
   },
   methods: {
+    fetchData: function fetchData() {
+      var _this = this;
+
+      axios.get("/api/contacts/".concat(this.$route.params.id)).then(function (response) {
+        _this.contact = response.data.data;
+      })["catch"](function (err) {
+        if (err.response.status === 404) {
+          _this.$router.push('/contacts');
+        }
+      });
+    },
     destroy: function destroy() {
       var _this2 = this;
 
@@ -2729,6 +2785,15 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (err) {
         alert("Internal Error. Unable to delete contact.");
       });
+    }
+  },
+  watch: {
+    $route: function $route(to, from) {
+      //We need to get the new Contact detail
+      //this is due to the Search option that changes the route
+      if (to.name == "contactDetail") {
+        this.fetchData();
+      }
     }
   }
 });
@@ -21013,6 +21078,30 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/actions/Logout.vue?vue&type=template&id=4ce06a0c&":
+/*!******************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/actions/Logout.vue?vue&type=template&id=4ce06a0c& ***!
+  \******************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div")
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/App.vue?vue&type=template&id=332fccf4&":
 /*!******************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/App.vue?vue&type=template&id=332fccf4& ***!
@@ -21059,6 +21148,7 @@ var render = function() {
                 {
                   staticClass:
                     "flex items-center py-2 hover:text-blue-600 hover:bg-gray-200",
+                  class: { "selected-menu": _vm.namedLink == "newContact" },
                   attrs: { to: "/contacts/create" }
                 },
                 [
@@ -21100,6 +21190,7 @@ var render = function() {
                 {
                   staticClass:
                     "flex items-center py-2 hover:text-blue-600 hover:bg-gray-200",
+                  class: { "selected-menu": _vm.namedLink == "contacts" },
                   attrs: { to: "/contacts" }
                 },
                 [
@@ -21135,6 +21226,7 @@ var render = function() {
                 {
                   staticClass:
                     "flex items-center py-2 hover:text-blue-600 hover:bg-gray-200",
+                  class: { "selected-menu": _vm.namedLink == "birthdays" },
                   attrs: { to: "/birthdays" }
                 },
                 [
@@ -21176,7 +21268,7 @@ var render = function() {
                 {
                   staticClass:
                     "flex items-center py-2 hover:text-blue-600 hover:bg-gray-200",
-                  attrs: { to: "/" }
+                  attrs: { to: "/logout" }
                 },
                 [
                   _c(
@@ -21816,6 +21908,7 @@ var render = function() {
                   return _c(
                     "div",
                     {
+                      key: result.data.id,
                       on: {
                         click: function($event) {
                           _vm.focus = false
@@ -21990,28 +22083,36 @@ var render = function() {
           }
         }),
         _vm._v(" "),
-        _vm._m(0)
+        _c("div", { staticClass: "flex justify-end" }, [
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-secondary mr-2",
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  return _vm.$router.push("/")
+                }
+              }
+            },
+            [_vm._v("Cancel")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-primary",
+              attrs: { disabled: _vm.sending }
+            },
+            [_vm._v("Add new contact")]
+          )
+        ])
       ],
       1
     )
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "flex justify-end" }, [
-      _c("button", { staticClass: "btn btn-secondary mr-2" }, [
-        _vm._v("Cancel")
-      ]),
-      _vm._v(" "),
-      _c("button", { staticClass: "btn btn-primary" }, [
-        _vm._v("Add new contact")
-      ])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -22122,26 +22223,36 @@ var render = function() {
           }
         }),
         _vm._v(" "),
-        _vm._m(0)
+        _c("div", { staticClass: "flex justify-end" }, [
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-secondary mr-2",
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  return _vm.$router.push("/contacts/" + _vm.$route.params.id)
+                }
+              }
+            },
+            [_vm._v("Cancel")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-primary",
+              attrs: { disabled: _vm.sending }
+            },
+            [_vm._v("Save")]
+          )
+        ])
       ],
       1
     )
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "flex justify-end" }, [
-      _c("button", { staticClass: "btn btn-secondary mr-2" }, [
-        _vm._v("Cancel")
-      ]),
-      _vm._v(" "),
-      _c("button", { staticClass: "btn btn-primary" }, [_vm._v("Save")])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -37491,6 +37602,76 @@ module.exports = function(module) {
 
 /***/ }),
 
+/***/ "./resources/js/actions/Logout.vue":
+/*!*****************************************!*\
+  !*** ./resources/js/actions/Logout.vue ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Logout_vue_vue_type_template_id_4ce06a0c___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Logout.vue?vue&type=template&id=4ce06a0c& */ "./resources/js/actions/Logout.vue?vue&type=template&id=4ce06a0c&");
+/* harmony import */ var _Logout_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Logout.vue?vue&type=script&lang=js& */ "./resources/js/actions/Logout.vue?vue&type=script&lang=js&");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Logout_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _Logout_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _Logout_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _Logout_vue_vue_type_template_id_4ce06a0c___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _Logout_vue_vue_type_template_id_4ce06a0c___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/actions/Logout.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/actions/Logout.vue?vue&type=script&lang=js&":
+/*!******************************************************************!*\
+  !*** ./resources/js/actions/Logout.vue?vue&type=script&lang=js& ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Logout_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./Logout.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/actions/Logout.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Logout_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/actions/Logout.vue?vue&type=template&id=4ce06a0c&":
+/*!************************************************************************!*\
+  !*** ./resources/js/actions/Logout.vue?vue&type=template&id=4ce06a0c& ***!
+  \************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Logout_vue_vue_type_template_id_4ce06a0c___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./Logout.vue?vue&type=template&id=4ce06a0c& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/actions/Logout.vue?vue&type=template&id=4ce06a0c&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Logout_vue_vue_type_template_id_4ce06a0c___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Logout_vue_vue_type_template_id_4ce06a0c___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/app.js":
 /*!*****************************!*\
   !*** ./resources/js/app.js ***!
@@ -38034,9 +38215,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _views_ContactsShow__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./views/ContactsShow */ "./resources/js/views/ContactsShow.vue");
 /* harmony import */ var _views_ContactsEdit__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./views/ContactsEdit */ "./resources/js/views/ContactsEdit.vue");
 /* harmony import */ var _views_ContactsIndex__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./views/ContactsIndex */ "./resources/js/views/ContactsIndex.vue");
+/* harmony import */ var _actions_Logout__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./actions/Logout */ "./resources/js/actions/Logout.vue");
 /***
  * All the routing for Vue will be declared here instead of app.js
  */
+
 
 
 
@@ -38048,24 +38231,49 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
 /* harmony default export */ __webpack_exports__["default"] = (new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
   routes: [{
     path: '/',
-    component: _components_ExampleComponent_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
+    name: 'contacts',
+    component: _views_ContactsIndex__WEBPACK_IMPORTED_MODULE_6__["default"],
+    meta: {
+      title: 'Welcome'
+    }
   }, {
     path: '/contacts',
     name: 'contacts',
-    component: _views_ContactsIndex__WEBPACK_IMPORTED_MODULE_6__["default"]
+    component: _views_ContactsIndex__WEBPACK_IMPORTED_MODULE_6__["default"],
+    meta: {
+      title: 'Contacts'
+    }
   }, {
     path: '/birthdays',
     name: 'birthdays',
-    component: _views_ContactsIndex__WEBPACK_IMPORTED_MODULE_6__["default"]
+    component: _views_ContactsIndex__WEBPACK_IMPORTED_MODULE_6__["default"],
+    meta: {
+      title: 'Current month birthdays'
+    }
   }, {
     path: '/contacts/create',
-    component: _views_ContactsCreate__WEBPACK_IMPORTED_MODULE_3__["default"]
+    name: 'newContact',
+    component: _views_ContactsCreate__WEBPACK_IMPORTED_MODULE_3__["default"],
+    meta: {
+      title: 'Add new Contact'
+    }
   }, {
     path: '/contacts/:id',
-    component: _views_ContactsShow__WEBPACK_IMPORTED_MODULE_4__["default"]
+    name: 'contactDetail',
+    component: _views_ContactsShow__WEBPACK_IMPORTED_MODULE_4__["default"],
+    meta: {
+      title: 'Details for Contact'
+    }
   }, {
     path: '/contacts/:id/edit',
-    component: _views_ContactsEdit__WEBPACK_IMPORTED_MODULE_5__["default"]
+    name: 'editContact',
+    component: _views_ContactsEdit__WEBPACK_IMPORTED_MODULE_5__["default"],
+    meta: {
+      title: 'Edit Contact information'
+    }
+  }, {
+    path: '/logout',
+    component: _actions_Logout__WEBPACK_IMPORTED_MODULE_7__["default"]
   }],
   mode: 'history'
 }));

@@ -47,18 +47,19 @@ export default {
         }
     },
     mounted(){
-
-        axios.get( `/api/contacts/${this.$route.params.id}`).then(response=>{
-            this.contact = response.data.data;
-        }).catch(err=>{
-
-            if (err.response.status === 404){
-                this.$router.push('/contacts');
-            }
-        });
-
+        this.fetchData();
     },
     methods:{
+        fetchData(){
+            axios.get( `/api/contacts/${this.$route.params.id}`).then(response=>{
+                this.contact = response.data.data;
+            }).catch(err=>{
+
+                if (err.response.status === 404){
+                    this.$router.push('/contacts');
+                }
+            });
+        },
         destroy() {
             axios.delete( `/api/contacts/${this.$route.params.id}`).then(response=>{
                 this.$router.push('/contacts');
@@ -66,7 +67,17 @@ export default {
                 alert("Internal Error. Unable to delete contact.");
             });
         }
+    },
+    watch: {
+        $route(to, from){
+            //We need to get the new Contact detail
+            //this is due to the Search option that changes the route
+            if (to.name == "contactDetail"){
+                this.fetchData();
+            }
+        },
     }
+
 }
 </script>
 

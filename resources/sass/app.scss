@@ -8,6 +8,20 @@
 https://tailwindcss.com/docs/extracting-components/
 recomends to extract the components and crea own custom clases
 */
+
+.selected-menu {
+    transition: all .25s ease-out;
+    
+    @apply bg-blue-200 border-blue-400 border-r-2 ;
+    background: linear-gradient(270deg, rgba(99,179,237,0.3) 0%, rgba(255,255,255,0.24) 75%);
+    
+    
+    &:hover{
+        @apply bg-blue-200 border-blue-300 border-r-4 ;
+        background: linear-gradient(270deg, rgba(0,179,237,0.2) 0%, rgba(255,255,255,0.24) 75%);
+    }
+}
+
 .btn {
     transition: all .25s ease-out;
     @apply px-4 py-2 rounded text-xs uppercase font-bold shadow-sm ;
@@ -21,7 +35,21 @@ recomends to extract the components and crea own custom clases
     &:active{
         @apply shadow;
     }
+    
+    
 
+}
+button:disabled,
+button[disabled]{
+    box-shadow: none!important;
+    @apply opacity-50 cursor-not-allowed;
+    
+    &:hover{
+        box-shadow: none!important;
+    }
+    &:active{
+        box-shadow: none!important;
+    }
 }
 .btn-primary{
    @apply text-white shadow-md bg-blue-500;
