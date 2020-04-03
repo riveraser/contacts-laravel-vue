@@ -32,7 +32,12 @@
             <div class="flex flex-col flex-1 h-screen overflow-y-hidden" >
                 <div class="h-16 p-6 border-b border-gray-400 flex items-center justify-between bg-gray-100 " >
                     <div>Contacts</div>
-                    <UserCircle :name="user.name" ></UserCircle>
+
+                    <div class="flex items-center" >
+                        <SearchBar></SearchBar>
+                        <UserCircle :name="user.name" ></UserCircle>
+                    </div>
+
                 </div>
                 <div class="flex flex-col overflow-y-hidden flex-1"  >
                     <router-view class="p-6 overflow-x-hidden" ></router-view>
@@ -44,13 +49,14 @@
 </template>
 
 <script>
-
+import SearchBar from './SearchBar';
 import UserCircle from './UserCircle';
 
 export default {
     name: "App",
     components: {
-        UserCircle
+        UserCircle,
+        SearchBar
     },
     props: [
         'user'
@@ -82,5 +88,12 @@ export default {
     transform: scaleY(0);
     height: 1px;
     font-size: 1px;
+}
+.fadeOpacity-enter-active,
+.fadeOpacity-leave-active {
+  transition: opacity 0.25s ease-out;
+}
+.fadeOpacity-enter, .fadeOpacity-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>
